@@ -15,17 +15,29 @@ function createPlayer(marker, playerName){
 
 
 function playGame() {
-    const nuBoard = gameBoard;
+    let nuBoard = gameBoard;
     const grid = document.querySelectorAll('.cell');
     const message = document.querySelector('.header');
-
+    const abortController = new AbortController();
+    const resetButton = document.querySelector('button');
 
         
     const player1 = createPlayer('X', 'Player 1');
     const player2 = createPlayer('O','Player 2');
     let currentPlayer = 1;
-    const gridArray = Array.from(grid);
+    let gridArray = Array.from(grid);
 
+    resetButton.addEventListener('click', () => {
+        nuBoard.gameArray = ['','','','','','','','',''];
+        gridArray = Array.from(grid);
+        gridArray.forEach( (node) => {
+            node.textContent = '';
+        })
+        message.textContent = "Okay let's go again!";
+        playerWins(player1).win = false;
+        playerWins(player1).win = false;
+        playGame();
+    });
  
 
     const playerWins = (player) => {
@@ -62,41 +74,43 @@ function playGame() {
     };
 
 
-    const markSpot = (player,spot) => {
+    function markSpot(player, spot) {
         nuBoard.gameArray[spot] = player.symbol;
         gridArray[spot].textContent = player.symbol;
         console.log(playerWins(player).win);
-        if(playerWins(player).win){
+        if (playerWins(player).win) {
             message.textContent = `${player.name} wins!!!`;
-            gridArray.forEach( (node) => {
-                console.log(node);
-                node.removeEventListener('click', takeTurns(node));
+            gridArray.forEach((node) => {
+                // console.log(node);
+                // node.removeEventListener('click', takeTurns(node));
+                abortController.abort();
             });
         }
         return nuBoard.gameArray;
-    };
+    }
 
 
     function takeTurns(node) {
-        function innerFunction(){
+        const innerFunction = () => {
             if(currentPlayer > 0){
                 markSpot(player1, gridArray.indexOf(node));
             } else {
                 markSpot(player2, gridArray.indexOf(node));
             }
             currentPlayer *= -1;
-        }
+        };
 
         return innerFunction;
 
     }
 
-    gridArray.forEach( (node) => {
-        node.addEventListener('click', takeTurns(node), {once: true});
-    });
+        gridArray.forEach( (node) => {
+        node.addEventListener('click', takeTurns(node), {once: true, signal: abortController.signal});
+        });
 
-   // return {nuBoard, markSpot, playerWins};
 }
 
 playGame();
+
+
 
