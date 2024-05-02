@@ -24,7 +24,6 @@
 .cell {
     width: 200px;
     height: 200px;
-    border: 1px solid blue;
     font-size: 80px;
     display: flex;
     flex-direction: column;
@@ -36,7 +35,15 @@
 .three,
 .five,
 .seven {
-    background-color: grey;
+    background-color: rgb(217, 228, 244);
+}
+
+.zero,
+.two,
+.four,
+.six,
+.eight {
+    background-color: rgb(212, 244, 237);
 }
 
 button {
