@@ -26,38 +26,7 @@ function playGame() {
     let currentPlayer = 1;
     const gridArray = Array.from(grid);
 
-
-    const takeTurns = (node) => {
-    
-            if(currentPlayer > 0){
-                markSpot(player1, gridArray.indexOf(node));
-            } else {
-                markSpot(player2, gridArray.indexOf(node));
-            }
-            currentPlayer *= -1;
-
-    };
-
-
-    gridArray.forEach( (node) => {
-        node.addEventListener('click', () => takeTurns(node), {once: true});
-    });
-
-
-    const markSpot = (player,spot) => {
-        nuBoard.gameArray[spot] = player.symbol;
-        gridArray[spot].textContent = nuBoard.gameArray[spot];
-        console.log(playerWins(player).win);
-        if(playerWins(player).win){
-            message.textContent = `${player.name} wins!!!`;
-            gridArray.forEach( (node) => {
-                console.log(node);
-                node.removeEventListener('click', () => takeTurns(node), {once: true});
-            });
-        }
-        return nuBoard.gameArray;
-    };
-
+ 
 
     const playerWins = (player) => {
 
@@ -90,10 +59,44 @@ function playGame() {
         };
 
         return {win};
+    };
+
+
+    const markSpot = (player,spot) => {
+        nuBoard.gameArray[spot] = player.symbol;
+        gridArray[spot].textContent = player.symbol;
+        console.log(playerWins(player).win);
+        if(playerWins(player).win){
+            message.textContent = `${player.name} wins!!!`;
+            gridArray.forEach( (node) => {
+                console.log(node);
+                node.removeEventListener('click', takeTurns(node));
+            });
+        }
+        return nuBoard.gameArray;
+    };
+
+
+    function takeTurns(node) {
+        function innerFunction(){
+            if(currentPlayer > 0){
+                markSpot(player1, gridArray.indexOf(node));
+            } else {
+                markSpot(player2, gridArray.indexOf(node));
+            }
+            currentPlayer *= -1;
+        }
+
+        return innerFunction;
+
     }
 
-    return {nuBoard, markSpot, playerWins};
+    gridArray.forEach( (node) => {
+        node.addEventListener('click', takeTurns(node), {once: true});
+    });
+
+   // return {nuBoard, markSpot, playerWins};
 }
 
-const newGame = playGame();
+playGame();
 
